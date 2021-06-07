@@ -22,7 +22,6 @@ const originalFetch     = Object.assign({}, fetchMessages).fetchMessages;
 // Helper functions
 
 const appendHiddenChannelNotice = () => {
-    console.log("asd")
 	const messagesWrapper = document.querySelector(`.${webpackModules.findByProps("messagesWrapper").messagesWrapper}`);
 	if (!messagesWrapper) return;
 
