@@ -1,10 +1,9 @@
 {
   "main": "index.js",
-  "version": "1.0.0",
-
-  "name": "Hidden channels",
+  "version": "2.0.1",
+  "name": "Hidden Channels",
   "description": "Allows you to see the names and the description of hidden channels.",
-  "tags": ["quick-actions"],
+  "tags": ["ui"],
   "authors": ["189079074054995969"],
   "images": []
 }
