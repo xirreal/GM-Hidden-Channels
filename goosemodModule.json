@@ -1,0 +1,10 @@
+{
+  "main": "index.js",
+  "version": "1.0.0",
+
+  "name": "Hidden channels",
+  "description": "Allows you to see the names and the description of hidden channels.",
+  "tags": ["quick-actions"],
+  "authors": ["189079074054995969"],
+  "images": []
+}
