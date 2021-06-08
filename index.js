@@ -72,7 +72,6 @@ const hiddenChannelCache = Object.values(getGuilds()).reduce((cache, currentGuil
 
 let caching = false;
 const cacheHiddenChannels = () => {
-    console.log('[Hidden Channels] Caching all guilds and channels.');
     caching = true;
     const fetchedChannels = Object.values(getAllChannels());
     fetchedChannels.forEach(channel => {
@@ -89,7 +88,6 @@ const Unpatch = {}
 export default {
 	goosemodHandlers: {
 		onImport: async () => {
-            console.log('[Hidden Channels] Starting hidden channels!');
             cacheHiddenChannels();
             Dispatcher.subscribe("CHANNEL_SELECT", handleChannelChange);
 
@@ -100,7 +98,6 @@ export default {
 
                 if(hiddenChannelCache[originalArgs[0]].channels != previousReturn.count && !caching) {
                     caching = true;
-                    console.log("[Hidden Channels] Cache is invalid! Fetching again.");
                     hiddenChannelCache[originalArgs[0]] = {
                         channels: getDefaultChannel.getChannels(originalArgs[0]).count,
                         hiddenChannels: []
@@ -149,12 +146,7 @@ export default {
             }
 		},
 
-		onLoadingFinished: async () => {
-			console.log('[Hidden Channels] Finished loading!');
-		},
-
 		onRemove: async () => {
-            console.log('[Hidden Channels] Unloading and unpatching.');
             Dispatcher.unsubscribe("CHANNEL_SELECT", handleChannelChange);
             Object.values(Unpatch).forEach(unpatch => unpatch());
 		},
