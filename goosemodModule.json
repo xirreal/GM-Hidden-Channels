@@ -1,9 +1,13 @@
 {
   "main": "index.js",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "name": "Hidden Channels",
   "description": "Allows you to see the names and the description of hidden channels.",
   "tags": ["ui"],
   "authors": ["189079074054995969"],
-  "images": ["https://raw.githubusercontent.com/xirreal/GM-Hidden-Channels/main/images/0.png"]
+  "images": [
+    "https://raw.githubusercontent.com/xirreal/GM-Hidden-Channels/main/images/0.png",
+    "https://raw.githubusercontent.com/xirreal/GM-Hidden-Channels/main/images/1.png",
+    "https://raw.githubusercontent.com/xirreal/GM-Hidden-Channels/main/images/2.png"
+    ]
 }
