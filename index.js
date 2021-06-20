@@ -39,19 +39,17 @@ const appendHiddenChannelNotice = () => {
 	const txt = webpackModules.findByProps("h5");
 	const flex = webpackModules.findByProps("flex");
 
-    try {
-        newMessage.className = flex.flexCenter;
-        newMessage.style.width = "100%";
+    newMessage.className = flex.flexCenter;
+    newMessage.style.width = "100%";
 
-        newMessage.innerHTML = `
-            <div class="${flex.flex} ${flex.directionColumn} ${flex.alignCenter}">
-            <h2 class="${txt.h2} ${txt.defaultColor}">This is a hidden channel.</h2>
-            <h5 class="${txt.h5} ${txt.defaultColor}">You cannot see the contents of this channel. However, you may see its name and topic.</h5>
-            </div>`;
+    newMessage.innerHTML = `
+        <div class="${flex.flex} ${flex.directionColumn} ${flex.alignCenter}">
+        <h2 class="${txt.h2} ${txt.defaultColor}">This is a hidden channel.</h2>
+        <h5 class="${txt.h5} ${txt.defaultColor}">You cannot see the contents of this channel. However, you may see its name and topic.</h5>
+        </div>`;
 
-        messagesWrapper.appendChild(newMessage);
-    }
-    catch (e) {};
+    messagesWrapper.appendChild(newMessage);
+
 }
 
 const handleChannelChange = data => {
@@ -61,8 +59,8 @@ const handleChannelChange = data => {
 
 const isChannelVisible = channelId => {
     const channel = getChannel(channelId);
-    if([ChannelTypes.DM].includes(channel?.type)) return true;
-    return [ChannelTypes.GUILD_TEXT, ChannelTypes.GUILD_VOICE, ChannelTypes.STAGE_VOICE, ChannelTypes.GUILD_ANNOUNCEMENTS].includes(channel?.type) && checkPermission(Permissions.VIEW_CHANNEL, currentUser, channel);
+    if(!channel || !channelId || [ChannelTypes.DM].includes(channel?.type)) return true;
+    return [ChannelTypes.GUILD_TEXT, ChannelTypes.GUILD_VOICE, ChannelTypes.GUILD_STAGE_VOICE, ChannelTypes.GUILD_ANNOUNCEMENT].includes(channel?.type) && checkPermission(Permissions.VIEW_CHANNEL, currentUser, channel);
 }
 
 const hiddenChannelCache = Object.values(getGuilds()).reduce((cache, currentGuild) => { 
@@ -116,7 +114,7 @@ export default {
                         channels: getDefaultChannel.getChannels(originalArgs[0]).count,
                         hiddenChannels: []
                     };
-                    previousReturn.SELECTABLE.concat(previousReturn.VOICE).forEach(channel => {
+                    previousReturn.SELECTABLE.concat(previousReturn.VOCAL).forEach(channel => {
                         if (!isChannelVisible(channel?.id))
                             hiddenChannelCache[originalArgs[0]].hiddenChannels.push(channel);
                     });
@@ -128,11 +126,12 @@ export default {
 
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
                 // originalArgs[0] is the channel id
+
                 hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
-                    if(!channel) return;
-                    const result = previousReturn[channel.parent_id || "null"].filter((item) => item.channel.id === channel.id );
-					if (result.length) return;
-					previousReturn[channel.parent_id || "null"].push({ channel: channel, index: 0 });
+                    if(!channel) return previousReturn;
+                    const channelsInCategory = previousReturn[channel.parent_id || "null"];
+					if (channelsInCategory.filter((item) => item?.channel?.id === channel.id).length) return previousReturn;
+				    channelsInCategory.push({ channel: channel, index: 0 });
                 });
 
                 return previousReturn;
