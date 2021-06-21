@@ -59,7 +59,7 @@ const handleChannelChange = data => {
 
 const isChannelVisible = channelId => {
     const channel = getChannel(channelId);
-    if(!channel || !channelId || [ChannelTypes.DM].includes(channel?.type)) return true;
+    if(!channel || !channelId || [ChannelTypes.DM, ChannelTypes.GROUP_DM].includes(channel?.type)) return true;
     return [ChannelTypes.GUILD_TEXT, ChannelTypes.GUILD_VOICE, ChannelTypes.GUILD_STAGE_VOICE, ChannelTypes.GUILD_ANNOUNCEMENT].includes(channel?.type) && checkPermission(Permissions.VIEW_CHANNEL, currentUser, channel);
 }
 
