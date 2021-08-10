@@ -90,7 +90,7 @@ const Unpatch = {}
 
 const cssHeader = document.createElement('style');
 cssHeader.id = 'hidden-channels-css';
-cssHeader.textContent = `[aria-label$="hidden"] > div[aria-label$="(Limited)"] path[d^="M2"][d*="19"], [aria-label$="hidden"] > div[aria-label$="(Locked)"] path[d^="M17"][d*="19"]{ fill: #ed4245 !important; }`;
+cssHeader.textContent = `[aria-label$="hidden"] > div path[d^="M2"][d*="19"], [aria-label$="hidden"] > div path[d^="M17"][d*="19"]{ fill: #ed4245 !important; }`;
 
 export default {
     goosemodHandlers: {
