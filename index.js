@@ -99,7 +99,9 @@ export default {
 
             document.head.appendChild(cssHeader);
 
-            Unpatch.CSS = () => { cssHeader.remove(); }
+            Unpatch.CSS = () => {
+		    cssHeader.remove();
+	    };
 
             Unpatch.getDefaultChannel = patcher.patch(getDefaultChannel, "getChannels", (originalArgs, previousReturn) => {
                 // originalArgs[0] is the channel id
