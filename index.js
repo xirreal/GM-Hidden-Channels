@@ -23,21 +23,21 @@ const originalFetch     = Object.assign({}, fetchMessages).fetchMessages;
 // Helper functions
 
 const appendHiddenChannelNotice = () => {
-	const messagesWrapper = document.querySelector(`.${webpackModules.findByProps("messagesWrapper").messagesWrapper}`);
-	if (!messagesWrapper) return;
+    const messagesWrapper = document.querySelector(`.${webpackModules.findByProps("messagesWrapper").messagesWrapper}`);
+    if (!messagesWrapper) return;
 
-	messagesWrapper.firstChild.style.display = "none";
+    messagesWrapper.firstChild.style.display = "none";
     if(messagesWrapper.firstChild.nextSibling) messagesWrapper.firstChild.nextSibling.style.display = "none";
-	messagesWrapper.parentElement.children[1].style.display = "none";
-	messagesWrapper.parentElement.parentElement.children[1].style.display = "none";
+        messagesWrapper.parentElement.children[1].style.display = "none";
+        messagesWrapper.parentElement.parentElement.children[1].style.display = "none";
 
-	const toolbar = document.querySelector(`.${webpackModules.findByProps("toolbar", "selected").toolbar}`);
+    const toolbar = document.querySelector(`.${webpackModules.findByProps("toolbar", "selected").toolbar}`);
 
-	toolbar.style.display = "none";
+    toolbar.style.display = "none";
 
-	const newMessage = document.createElement("div");
-	const txt = webpackModules.findByProps("h5");
-	const flex = webpackModules.findByProps("flex");
+    const newMessage = document.createElement("div");
+    const txt = webpackModules.findByProps("h5");
+    const flex = webpackModules.findByProps("flex");
 
     newMessage.className = flex.flexCenter;
     newMessage.style.width = "100%";
@@ -53,8 +53,8 @@ const appendHiddenChannelNotice = () => {
 }
 
 const handleChannelChange = data => {
-	if (data.type !== "CHANNEL_SELECT" || !data.channelId) return;
-	if (!isChannelVisible(data.channelId)) setTimeout(appendHiddenChannelNotice);
+    if (data.type !== "CHANNEL_SELECT" || !data.channelId) return;
+    if (!isChannelVisible(data.channelId)) setTimeout(appendHiddenChannelNotice);
 }
 
 const isChannelVisible = channelId => {
@@ -90,11 +90,11 @@ const Unpatch = {}
 
 const cssHeader = document.createElement('style');
 cssHeader.id = 'hidden-channels-css';
-cssHeader.textContent = `[aria-label$="hidden"] > div[aria-label$="(Limited)"] path[d^="M2"][d*="19"], [aria-label$="hidden"] > div[aria-label$="(Locked)"] path[d^="M17"][d*="19"]{ fill: #ed4245 !important; }`;
+cssHeader.textContent = `[aria-label$="hidden"] > div path[d^="M2"][d*="19"], [aria-label$="hidden"] > div path[d^="M17"][d*="19"]{ fill: #ed4245 !important; }`;
 
 export default {
-	goosemodHandlers: {
-		onImport: async () => {
+    goosemodHandlers: {
+        onImport: async () => {
             cacheHiddenChannels();
             Dispatcher.subscribe("CHANNEL_SELECT", handleChannelChange);
 
@@ -163,11 +163,11 @@ export default {
             Unpatch.fetchMessages = () => {
                 fetchMessages.fetchMessages = originalFetch;
             }
-		},
+      },
 
-		onRemove: async () => {
+      onRemove: async () => {
             Dispatcher.unsubscribe("CHANNEL_SELECT", handleChannelChange);
             Object.values(Unpatch).forEach(unpatch => unpatch());
-		},
-	}
+        },
+    }
 };
