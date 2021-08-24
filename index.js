@@ -172,26 +172,20 @@ export default {
                 console.log("Meow Called getCategories", hiddenChannelCache[originalArgs[0]]);
 
                 (function waitForCaching(){
-                    console.log("waiting...");
-                    if(hiddenChannelCache[originalArgs[0]]?.hiddenChannels !== undefined) setTimeout(waitForCaching, 1000);
-                })
+                    if(hiddenChannelCache[originalArgs[0]]?.hiddenChannels === undefined) setTimeout(waitForCaching, 1000);
+                    // else {
+                    //     hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
+                    //         if(!channel) return previousReturn;
+                    //         const channelsInCategory = previousReturn[channel.parent_id || "null"];
+                    //         if (channelsInCategory.filter((item) => item?.channel?.id === channel.id).length) return previousReturn;
+                    //         channelsInCategory.push({ channel: channel, index: 0 });
+                    //     });
+        
+                    //     return previousReturn;
+                    // }
+                })();
 
                 console.log("done!");
-
-                // await new Promise(r => {
-                //     (function wait () {
-                //         if(hiddenChannelCache[originalArgs[0]]?.hiddenChannels !== undefined) r();
-                //         else setTimeout(wait, 0);
-                // })()}).then(() => {
-                //     hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
-                //         if(!channel) return previousReturn;
-                //         const channelsInCategory = previousReturn[channel.parent_id || "null"];
-                //         if (channelsInCategory.filter((item) => item?.channel?.id === channel.id).length) return previousReturn;
-                //         channelsInCategory.push({ channel: channel, index: 0 });
-                //     });
-    
-                //     return previousReturn;
-                // });
 
                 return previousReturn;
             });
