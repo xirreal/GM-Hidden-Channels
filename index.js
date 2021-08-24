@@ -70,29 +70,20 @@ const hiddenChannelCache = Object.values(getGuilds()).reduce((cache, currentGuil
     return cache;
 }, {});
 
-
-let caching = false;
 const cacheHiddenChannels = () => {
-    caching = true;
     const fetchedChannels = Object.values(getAllChannels());
     fetchedChannels.forEach(channel => {
         if (channel.type !== ChannelTypes.GUILD_CATEGORY && !isChannelVisible(channel.id))
             hiddenChannelCache[channel.guild_id].hiddenChannels.push(channel);
     });
-    caching = false;
 }
 
 const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
-    caching = true;
     if(newHiddenChannels?.length > 0 && hiddenChannelCache[guildId]?.channels !== undefined) {
         hiddenChannelCache[guildId].hiddenChannels.concat(newHiddenChannels);
-        caching = false;
         return;
     }
-    else if(hiddenChannelCache[guildId]?.channels?.length > 0 && hiddenChannelCache[guildId]?.channels?.length == channels.count) {
-        caching = false;
-        return;
-    }
+    else if(hiddenChannelCache[guildId]?.channels?.length > 0 && hiddenChannelCache[guildId]?.channels?.length == channels.count) return;
 
     const channels = getDefaultChannel.getChannels(guildId);
 
@@ -109,7 +100,7 @@ const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
 }
 
 const handleGuildJoin = (event) => {
-    cacheServerHiddenChannels(event.guild.id);
+    setImmediate(cacheServerHiddenChannels(event.guild.id));
 };
 
 const handleGuildLeave = (event) => {
@@ -123,15 +114,17 @@ const handleGuildLeave = (event) => {
 }
 
 const handleChannelUpdate = (event) => {
-    cacheServerHiddenChannels(event?.updates?.[0]?.channel?.guild_id || event?.channel?.guild_id, event?.updates?.filter(x => !isChannelVisible(x.id)));
+    setImmediate(cacheServerHiddenChannels(event?.updates?.[0]?.channel?.guild_id || event?.channel?.guild_id, event?.updates?.filter(x => !isChannelVisible(x.id))));
 };
 
 const handleChannelDelete = (event) => {
-    const guildId = event.channel.guild_id;
-    if(!hiddenChannelsCache[guildId]) return cacheServerHiddenChannels(guildId);
-
-    hiddenChannelsCache[guildId].hiddenChannels.filter(channel => channel?.id != event.channel.id)
-    hiddenChannelsCache[guildId].channels -= 1;
+    setImmediate(()=>{
+        const guildId = event.channel.guild_id;
+        if(!hiddenChannelsCache[guildId]) return cacheServerHiddenChannels(guildId);
+    
+        hiddenChannelsCache[guildId].hiddenChannels.filter(channel => channel?.id != event.channel.id)
+        hiddenChannelsCache[guildId].channels -= 1;
+    });
 }
 
 
@@ -176,8 +169,6 @@ export default {
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
                 // originalArgs[0] is the channel id
 
-                while(caching) { (async () => {await new Promise (r => setTimeout(r, 100)); })()};
-
                 hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
                     if(!channel) return previousReturn;
                     const channelsInCategory = previousReturn[channel.parent_id || "null"];
@@ -191,9 +182,6 @@ export default {
             Unpatch.ChannelItem = patcher.patch(ChannelItem, "default", (originalArgs) => {
                 // originalArgs[0] are the props
 
-                while(caching) { (async () => {await new Promise (r => setTimeout(r, 100)); })()};
-                console.log(hiddenChannelCache[originalArgs[0].channel.guild_id]);
-
                 if(!isChannelVisible(originalArgs[0].channel.id)) originalArgs[0]["aria-label"] += " hidden";
                 return originalArgs;
             }, true);
@@ -201,16 +189,12 @@ export default {
             Unpatch.hasUnread = patcher.patch(unreadManager, "hasUnread", (originalArgs) => {
                 // originalArgs[0] is the channel id
 
-                while(caching) { (async () => {await new Promise (r => setTimeout(r, 100)); })()};
-
                 if(!isChannelVisible(originalArgs[0])) originalArgs[0] = "";
                 return originalArgs;
             }, true);
 
             Unpatch.hasUnreadPins = patcher.patch(unreadManager, "hasUnreadPins", (originalArgs) => {
                 // originalArgs[0] is the channel id
-
-                while(caching) { (async () => {await new Promise (r => setTimeout(r, 100)); })()};
 
                 if(!isChannelVisible(originalArgs[0])) return ["unread"];
                 return originalArgs;
