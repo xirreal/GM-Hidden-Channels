@@ -166,7 +166,7 @@ export default {
             Unpatch.channelSelect = () => {FluxDispatcher.unsubscribe("CHANNEL_SELECT", handleChannelChange)};
             FluxDispatcher.subscribe("CHANNEL_SELECT", handleChannelChange);
 
-            Unpatch.getCategories = patcher.patch(getCategories, "getCategories", async (originalArgs, previousReturn) => {
+            Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
                 // originalArgs[0] is the channel id
 
                 console.log("Meow Called getCategories", hiddenChannelCache[originalArgs[0]]);
