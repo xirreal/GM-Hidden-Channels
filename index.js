@@ -171,6 +171,13 @@ export default {
 
                 console.log("Meow Called getCategories", hiddenChannelCache[originalArgs[0]]);
 
+                (function waitForCaching(){
+                    console.log("waiting...");
+                    if(hiddenChannelCache[originalArgs[0]]?.hiddenChannels !== undefined)) setTimeout(waitForCaching, 1000);
+                })
+
+                console.log("done!");
+
                 // await new Promise(r => {
                 //     (function wait () {
                 //         if(hiddenChannelCache[originalArgs[0]]?.hiddenChannels !== undefined) r();
