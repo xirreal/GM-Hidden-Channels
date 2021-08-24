@@ -169,7 +169,7 @@ export default {
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", async (originalArgs, previousReturn) => {
                 // originalArgs[0] is the channel id
 
-                console.log("Called getCategories", hiddenChannelCache[originalArgs[0]]);
+                console.log("Meow Called getCategories", hiddenChannelCache[originalArgs[0]]);
 
                 // await new Promise(r => {
                 //     (function wait () {
@@ -185,6 +185,8 @@ export default {
     
                 //     return previousReturn;
                 // });
+
+                return previousReturn;
             });
 
             Unpatch.ChannelItem = patcher.patch(ChannelItem, "default", (originalArgs) => {
