@@ -110,7 +110,9 @@ const handleGuildJoin = (event) => {
 };
 
 const handleGuildLeave = (event) => {
+    console.log(hiddenChannelCache[event.guild.id])
     delete hiddenChannelCache[event.guild.id];
+    console.log(hiddenChannelCache[event.guild.id])
 }
 
 const handleChannelUpdate = (event) => {
@@ -167,6 +169,7 @@ export default {
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
                 // originalArgs[0] is the channel id
 
+                console.log(hiddenChannelCache[originalArgs[0]]);
                 while(hiddenChannelCache[originalArgs[0]].hiddenChannels.length === undefined) {
                     console.log(hiddenChannelCache[originalArgs[0]])
                 }
