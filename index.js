@@ -103,7 +103,7 @@ const handleGuildJoin = (event) => {
     cacheServerHiddenChannels(event.guild.id);
 };
 
-const handleChannelLeave = (event) => {
+const handleGuildLeave = (event) => {
     const guildId = event.channel.guild_id;
     delete hiddenChannelCache[guildId];
 }
