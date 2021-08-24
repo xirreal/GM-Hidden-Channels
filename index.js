@@ -184,7 +184,7 @@ export default {
                 //     });
     
                 //     return previousReturn;
-                });
+                // });
             });
 
             Unpatch.ChannelItem = patcher.patch(ChannelItem, "default", (originalArgs) => {
