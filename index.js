@@ -166,12 +166,13 @@ export default {
             Unpatch.channelSelect = FluxDispatcher.unsubscribe("CHANNEL_SELECT", handleChannelChange);
             FluxDispatcher.subscribe("CHANNEL_SELECT", handleChannelChange);
 
-            Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
+            Unpatch.getCategories = patcher.patch(getCategories, "getCategories", async (originalArgs, previousReturn) => {
                 // originalArgs[0] is the channel id
 
-                console.log(hiddenChannelCache[originalArgs[0]]);
-                while(hiddenChannelCache[originalArgs[0]].hiddenChannels.length === undefined) {
-                    console.log(hiddenChannelCache[originalArgs[0]])
+                console.log("Called getCategories", hiddenChannelCache[originalArgs[0]]);
+
+                while(hiddenChannelCache[originalArgs[0]]?.hiddenChannels === undefined) {
+                    console.log("waiting");
                 }
 
                 hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
@@ -220,7 +221,7 @@ export default {
             }
         },
 
-        onRemove: async () => {
+        onRemove: () => {
             Object.values(Unpatch).forEach(unpatch => unpatch());
         },
     }
