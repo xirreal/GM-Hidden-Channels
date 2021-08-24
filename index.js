@@ -82,7 +82,6 @@ const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
 
     if(newHiddenChannels?.length > 0 && hiddenChannelCache[guildId]?.channels !== undefined) {
         hiddenChannelCache[guildId].hiddenChannels.concat(newHiddenChannels);
-        console.log("exiting early cause channel update")
         return;
     }
 
@@ -96,23 +95,18 @@ const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
     };
 
     channels.SELECTABLE.concat(channels.VOCAL).forEach(channel => {
-        console.log("checking channel");
         if (!isChannelVisible(channel?.id))
             hiddenChannelCache[guildId].hiddenChannels.push(channel);
     });
 
-    console.log("cached", new Date())
 }
 
 const handleGuildJoin = (event) => {
-    console.log("called guild join")
     cacheServerHiddenChannels(event.guild.id);
 };
 
 const handleGuildLeave = (event) => {
-    console.log(hiddenChannelCache[event.guild.id])
     delete hiddenChannelCache[event.guild.id];
-    console.log(hiddenChannelCache[event.guild.id])
 }
 
 const handleChannelUpdate = (event) => {
@@ -169,24 +163,12 @@ export default {
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
                 // originalArgs[0] is the channel id
 
-                console.log("Meow Called getCategories", hiddenChannelCache[originalArgs[0]]);
-
-                (function waitForCaching(){
-                    console.log("waiting...");
-                    if(hiddenChannelCache[originalArgs[0]]?.hiddenChannels === undefined) setTimeout(waitForCaching, 1000);
-                    // else {
-                    //     hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
-                    //         if(!channel) return previousReturn;
-                    //         const channelsInCategory = previousReturn[channel.parent_id || "null"];
-                    //         if (channelsInCategory.filter((item) => item?.channel?.id === channel.id).length) return previousReturn;
-                    //         channelsInCategory.push({ channel: channel, index: 0 });
-                    //     });
-        
-                    //     return previousReturn;
-                    // }
-                })();
-
-                console.log("done!");
+                hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
+                    if(!channel) return previousReturn;
+                    const channelsInCategory = previousReturn[channel.parent_id || "null"];
+                    if (channelsInCategory.filter((item) => item?.channel?.id === channel.id).length) return previousReturn;
+                    channelsInCategory.push({ channel: channel, index: 0 });
+                });
 
                 return previousReturn;
             });
