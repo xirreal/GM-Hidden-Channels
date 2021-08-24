@@ -149,21 +149,21 @@ export default {
 		        cssHeader.remove();
 	        };
 
-            Unpatch.guildCreate = FluxDispatcher.unsubscribe("GUILD_CREATE", handleGuildJoin);
+            Unpatch.guildCreate = () => {FluxDispatcher.unsubscribe("GUILD_CREATE", handleGuildJoin)};
             FluxDispatcher.subscribe("GUILD_CREATE", handleGuildJoin);
 
-            Unpatch.guildDelete = FluxDispatcher.unsubscribe("GUILD_DELETE", handleGuildLeave);
+            Unpatch.guildDelete = () => {FluxDispatcher.unsubscribe("GUILD_DELETE", handleGuildLeave)};
             FluxDispatcher.subscribe("GUILD_DELETE", handleGuildLeave);
 
-            Unpatch.channelUpdate = FluxDispatcher.unsubscribe("CHANNEL_UPDATES", handleChannelUpdate);
+            Unpatch.channelUpdate = () => {FluxDispatcher.unsubscribe("CHANNEL_UPDATES", handleChannelUpdate)};
             FluxDispatcher.subscribe("CHANNEL_UPDATES", handleChannelUpdate);
-            Unpatch.channelCreate = FluxDispatcher.unsubscribe("CHANNEL_CREATE", handleChannelUpdate);
+            Unpatch.channelCreate = () => {FluxDispatcher.unsubscribe("CHANNEL_CREATE", handleChannelUpdate)};
             FluxDispatcher.subscribe("CHANNEL_CREATE", handleChannelUpdate);
 
-            Unpatch.channelDelete = FluxDispatcher.unsubscribe("CHANNEL_DELETE", handleChannelDelete);
+            Unpatch.channelDelete = () => {FluxDispatcher.unsubscribe("CHANNEL_DELETE", handleChannelDelete)};
             FluxDispatcher.subscribe("CHANNEL_CREATE", handleChannelDelete);
 
-            Unpatch.channelSelect = FluxDispatcher.unsubscribe("CHANNEL_SELECT", handleChannelChange);
+            Unpatch.channelSelect = () => {FluxDispatcher.unsubscribe("CHANNEL_SELECT", handleChannelChange)};
             FluxDispatcher.subscribe("CHANNEL_SELECT", handleChannelChange);
 
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", async (originalArgs, previousReturn) => {
