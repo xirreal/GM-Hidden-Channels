@@ -79,26 +79,21 @@ const cacheHiddenChannels = () => {
 }
 
 const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
-    console.log(newHiddenChannels)
+
     if(newHiddenChannels?.length > 0 && hiddenChannelCache[guildId]?.channels?.length !== undefined) {
         hiddenChannelCache[guildId].hiddenChannels.concat(newHiddenChannels);
         console.log("exiting early cause channel update")
         return;
     }
-    else if(hiddenChannelCache[guildId]?.channels?.length > 0 && hiddenChannelCache[guildId]?.channels?.length == channels.count) return;
-
-    console.log("if you dont see this check line above!")
 
     const channels = getDefaultChannel.getChannels(guildId);
 
-    console.log(channels)
+    else if(hiddenChannelCache[guildId]?.channels?.length > 0 && hiddenChannelCache[guildId]?.channels?.length == channels.count) return;
 
     hiddenChannelCache[guildId] = {
         channels: channels.count,
         hiddenChannels: []
     };
-
-    console.log(hiddenChannelCache[guildId]);
 
     channels.SELECTABLE.concat(channels.VOCAL).forEach(channel => {
         console.log("checking channel");
@@ -106,7 +101,7 @@ const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
             hiddenChannelCache[guildId].hiddenChannels.push(channel);
     });
 
-    console.log(hiddenChannelCache[guildId]);
+    console.log("cached", new Date())
 }
 
 const handleGuildJoin = (event) => {
@@ -119,7 +114,6 @@ const handleGuildLeave = (event) => {
 }
 
 const handleChannelUpdate = (event) => {
-    console.log(!!event?.updates.length, event?.updates?.filter(x => !isChannelVisible(x.id)))
     setImmediate(cacheServerHiddenChannels(event?.updates?.[0]?.channel?.guild_id || event?.channel?.guild_id, event?.updates?.filter(x => !isChannelVisible(x.id))));
 };
 
@@ -175,6 +169,8 @@ export default {
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
                 // originalArgs[0] is the channel id
 
+                console.log("getCategories", new Date())
+
                 hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
                     if(!channel) return previousReturn;
                     const channelsInCategory = previousReturn[channel.parent_id || "null"];
@@ -187,6 +183,8 @@ export default {
 
             Unpatch.ChannelItem = patcher.patch(ChannelItem, "default", (originalArgs) => {
                 // originalArgs[0] are the props
+
+                console.log("channelItem", new Date())
 
                 if(!isChannelVisible(originalArgs[0].channel.id)) originalArgs[0]["aria-label"] += " hidden";
                 return originalArgs;
