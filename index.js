@@ -172,7 +172,7 @@ export default {
                 console.log("Called getCategories", hiddenChannelCache[originalArgs[0]]);
 
                 await new Promise(r => {
-                    (function wait ()=> {
+                    (function wait () {
                         if(hiddenChannelCache[originalArgs[0]]?.hiddenChannels !== undefined) r;
                         else setTimeout(wait, 0);
                     })()};
