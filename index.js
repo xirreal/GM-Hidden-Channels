@@ -116,7 +116,8 @@ const handleGuildLeave = (event) => {
     try {
         delete hiddenChannelCache[event.guild.id];
     }
-    catch (e) => {
+    catch (e) {
+        console.log(e)
         console.log(hiddenChannelCache);
     }
 }
