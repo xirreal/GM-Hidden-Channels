@@ -171,9 +171,12 @@ export default {
 
                 console.log("Called getCategories", hiddenChannelCache[originalArgs[0]]);
 
-                while(hiddenChannelCache[originalArgs[0]]?.hiddenChannels === undefined) {
-                    console.log("waiting");
-                }
+                await new Promise(r => {
+                    (function wait ()=> {
+                        if(hiddenChannelCache[originalArgs[0]]?.hiddenChannels !== undefined) r;
+                        else setTimeout(wait, 0);
+                })}();
+
 
                 hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
                     if(!channel) return previousReturn;
