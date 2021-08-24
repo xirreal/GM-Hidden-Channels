@@ -184,9 +184,9 @@ export default {
             Unpatch.ChannelItem = patcher.patch(ChannelItem, "default", (originalArgs) => {
                 // originalArgs[0] are the props
 
-                while(hiddenChannelCache[originalArgs[0].channel.guild_id].channels.length === undefined) {
-                    console.log("waiting...")
-                }
+                // while(hiddenChannelCache[originalArgs[0].channel.guild_id].channels.length === undefined) {
+                //     console.log("waiting...")
+                // }
 
                 if(!isChannelVisible(originalArgs[0].channel.id)) originalArgs[0]["aria-label"] += " hidden";
                 return originalArgs;
