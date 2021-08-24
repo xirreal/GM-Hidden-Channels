@@ -192,7 +192,7 @@ export default {
                 // originalArgs[0] are the props
 
                 while(caching) { (async () => {await new Promise (r => setTimeout(r, 100)); })()};
-                console.log(hiddenChannelCache[originalArgs[0]]);
+                console.log(hiddenChannelCache[originalArgs[0].channel.guild_id]);
 
                 if(!isChannelVisible(originalArgs[0].channel.id)) originalArgs[0]["aria-label"] += " hidden";
                 return originalArgs;
