@@ -3,7 +3,6 @@ import * as patcher from '@goosemod/patcher';
 
 // Webpacks
 
-const Dispatcher      = webpackModules.findByProps("dispatch");
 const getAllChannels  = webpackModules.findByProps("getMutableGuildChannels").getMutableGuildChannels;
 const currentUser     = webpackModules.findByProps("getCurrentUser").getCurrentUser();
 const checkPermission = webpackModules.findByProps("computePermissions").can;
@@ -11,6 +10,7 @@ const ChannelItem = webpackModules.find(m => m?.default?.displayName === 'Channe
 const { getChannel }  = webpackModules.findByProps("getChannel");
 const { getGuilds }   = webpackModules.findByProps("getGuilds");
 const { Permissions, ChannelTypes } = webpackModules.findByProps("Permissions","ChannelTypes");
+const FluxDispatcher = webpackModules.common.FluxDispatcher;
 
 // Webpacks to be patched
 
@@ -70,16 +70,56 @@ const hiddenChannelCache = Object.values(getGuilds()).reduce((cache, currentGuil
     return cache;
 }, {});
 
-let caching = false;
 const cacheHiddenChannels = () => {
-    caching = true;
     const fetchedChannels = Object.values(getAllChannels());
     fetchedChannels.forEach(channel => {
         if (channel.type !== ChannelTypes.GUILD_CATEGORY && !isChannelVisible(channel.id))
             hiddenChannelCache[channel.guild_id].hiddenChannels.push(channel);
     });
-    caching = false;
 }
+
+const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
+
+    if(newHiddenChannels?.length > 0 && hiddenChannelCache[guildId]?.channels !== undefined) {
+        hiddenChannelCache[guildId].hiddenChannels.concat(newHiddenChannels);
+        return;
+    };
+    else if(hiddenChannelCache[guildId]?.channels?.length > 0 && hiddenChannelCache[guildId]?.channels?.length == channels.count) return; 
+
+    const channels = getDefaultChannel.getChannels(guildId);
+
+    hiddenChannelCache[guildId] = {
+        channels: channels.count,
+        hiddenChannels: []
+    };
+
+    channels.SELECTABLE.concat(channels.VOCAL).forEach(channel => {
+        if (!isChannelVisible(channel?.id))
+            hiddenChannelCache[guildId].hiddenChannels.push(channel);
+    });
+}
+
+const handleGuildJoin = (event) => {
+    cacheServerHiddenChannels(event.guild.id);
+};
+
+const handleChannelLeave = (event) => {
+    const guildId = event.channel.guild_id;
+    delete hiddenChannelCache[guildId];
+}
+
+const handleChannelUpdate = (event) => {
+    cacheServerHiddenChannels(event?.updates?.[0]?.channel?.guild_id || event?.channel?.guild_id, event?.updates?.filter(x => !isChannelVisible(x.id)));
+};
+
+const handleChannelDelete = (event) => {
+    const guildId = event.channel.guild_id;
+    if(!hiddenChannelsCache.[guildId]) return cacheServerHiddenChannels(guildId);
+
+    hiddenChannelsCache.[guildId].hiddenChannels.filter(channel => channel?.id != event.channel.id)
+    hiddenChannelsCache.[guildId].channels -= 1;
+}
+
 
 // Unpatchers
 
@@ -95,33 +135,29 @@ export default {
     goosemodHandlers: {
         onImport: async () => {
             cacheHiddenChannels();
-            Dispatcher.subscribe("CHANNEL_SELECT", handleChannelChange);
 
             document.head.appendChild(cssHeader);
 
             Unpatch.CSS = () => {
-		    cssHeader.remove();
-	    };
+		        cssHeader.remove();
+	        };
 
-            Unpatch.getDefaultChannel = patcher.patch(getDefaultChannel, "getChannels", (originalArgs, previousReturn) => {
-                // originalArgs[0] is the channel id
-                if(!originalArgs[0]) return previousReturn;
+            Unpatch.guildCreate = FluxDispatcher.unsubscribe("GUILD_CREATE", handleGuildJoin);
+            FluxDispatcher.subscribe("GUILD_CREATE", handleGuildJoin);
 
-                if(hiddenChannelCache[originalArgs[0]]?.channels != previousReturn.count && !caching) {
-                    caching = true;
-                    hiddenChannelCache[originalArgs[0]] = {
-                        channels: getDefaultChannel.getChannels(originalArgs[0]).count,
-                        hiddenChannels: []
-                    };
-                    previousReturn.SELECTABLE.concat(previousReturn.VOCAL).forEach(channel => {
-                        if (!isChannelVisible(channel?.id))
-                            hiddenChannelCache[originalArgs[0]].hiddenChannels.push(channel);
-                    });
-                    caching = false;
-                }
+            Unpatch.guildDelete = FluxDispatcher.unsubscribe("GUILD_DELETE", handleGuildLeave);
+            FluxDispatcher.subscribe("GUILD_DELETE", handleGuildLeave);
 
-                return previousReturn;
-            });
+            Unpatch.channelUpdate = FluxDispatcher.unsubscribe("CHANNEL_UPDATES", handleChannelUpdate);
+            FluxDispatcher.subscribe("CHANNEL_UPDATES", handleChannelUpdate);
+            Unpatch.channelCreate = FluxDispatcher.unsubscribe("CHANNEL_CREATE", handleChannelUpdate);
+            FluxDispatcher.subscribe("CHANNEL_CREATE", handleChannelUpdate);
+
+            Unpatch.channelDelete = FluxDispatcher.unsubscribe("CHANNEL_DELETE", handleChannelDelete);
+            FluxDispatcher.subscribe("CHANNEL_CREATE", handleChannelDelete);
+
+            Unpatch.channelSelect = FluxDispatcher.unsubscribe("CHANNEL_SELECT", handleChannelChange);
+            FluxDispatcher.subscribe("CHANNEL_SELECT", handleChannelChange);
 
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
                 // originalArgs[0] is the channel id
@@ -129,8 +165,8 @@ export default {
                 hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
                     if(!channel) return previousReturn;
                     const channelsInCategory = previousReturn[channel.parent_id || "null"];
-					if (channelsInCategory.filter((item) => item?.channel?.id === channel.id).length) return previousReturn;
-				    channelsInCategory.push({ channel: channel, index: 0 });
+                    if (channelsInCategory.filter((item) => item?.channel?.id === channel.id).length) return previousReturn;
+                    channelsInCategory.push({ channel: channel, index: 0 });
                 });
 
                 return previousReturn;
@@ -162,10 +198,9 @@ export default {
             Unpatch.fetchMessages = () => {
                 fetchMessages.fetchMessages = originalFetch;
             }
-      },
+        },
 
-      onRemove: async () => {
-            Dispatcher.unsubscribe("CHANNEL_SELECT", handleChannelChange);
+        onRemove: async () => {
             Object.values(Unpatch).forEach(unpatch => unpatch());
         },
     }
