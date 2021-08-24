@@ -104,8 +104,7 @@ const handleGuildJoin = (event) => {
 };
 
 const handleGuildLeave = (event) => {
-    const guildId = event.channel.guild_id;
-    delete hiddenChannelCache[guildId];
+    delete hiddenChannelCache[event.guild.id];
 }
 
 const handleChannelUpdate = (event) => {
