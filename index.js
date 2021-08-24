@@ -106,7 +106,7 @@ const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
 
 const handleGuildJoin = (event) => {
     console.log("called guild join")
-    setImmediate(cacheServerHiddenChannels(event.guild.id));
+    cacheServerHiddenChannels(event.guild.id);
 };
 
 const handleGuildLeave = (event) => {
@@ -114,17 +114,15 @@ const handleGuildLeave = (event) => {
 }
 
 const handleChannelUpdate = (event) => {
-    setImmediate(cacheServerHiddenChannels(event?.updates?.[0]?.channel?.guild_id || event?.channel?.guild_id, event?.updates?.filter(x => !isChannelVisible(x.id))));
+    cacheServerHiddenChannels(event?.updates?.[0]?.channel?.guild_id || event?.channel?.guild_id, event?.updates?.filter(x => !isChannelVisible(x.id)));
 };
 
 const handleChannelDelete = (event) => {
-    setImmediate(()=>{
-        const guildId = event.channel.guild_id;
-        if(!hiddenChannelsCache[guildId]) return cacheServerHiddenChannels(guildId);
-    
-        hiddenChannelsCache[guildId].hiddenChannels.filter(channel => channel?.id != event.channel.id)
-        hiddenChannelsCache[guildId].channels -= 1;
-    });
+    const guildId = event.channel.guild_id;
+    if(!hiddenChannelsCache[guildId]) return cacheServerHiddenChannels(guildId);
+
+    hiddenChannelsCache[guildId].hiddenChannels.filter(channel => channel?.id != event.channel.id)
+    hiddenChannelsCache[guildId].channels -= 1;
 }
 
 
@@ -169,7 +167,9 @@ export default {
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
                 // originalArgs[0] is the channel id
 
-                console.log("getCategories", new Date())
+                while(hiddenChannelCache[originalArgs[0]].channels.length === undefined) {
+                    console.log("waiting...")
+                }
 
                 hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
                     if(!channel) return previousReturn;
@@ -184,7 +184,9 @@ export default {
             Unpatch.ChannelItem = patcher.patch(ChannelItem, "default", (originalArgs) => {
                 // originalArgs[0] are the props
 
-                console.log("channelItem", new Date())
+                while(hiddenChannelCache[originalArgs[0].channel.guild_id].channels.length === undefined) {
+                    console.log("waiting...")
+                }
 
                 if(!isChannelVisible(originalArgs[0].channel.id)) originalArgs[0]["aria-label"] += " hidden";
                 return originalArgs;
