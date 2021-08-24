@@ -173,7 +173,7 @@ export default {
 
                 (function waitForCaching(){
                     console.log("waiting...");
-                    if(hiddenChannelCache[originalArgs[0]]?.hiddenChannels !== undefined)) setTimeout(waitForCaching, 1000);
+                    if(hiddenChannelCache[originalArgs[0]]?.hiddenChannels !== undefined) setTimeout(waitForCaching, 1000);
                 })
 
                 console.log("done!");
