@@ -96,7 +96,6 @@ const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
         if (!isChannelVisible(channel?.id))
             hiddenChannelCache[guildId].hiddenChannels.push(channel);
     });
-    caching = false;
 }
 
 const handleGuildJoin = (event) => {
@@ -184,6 +183,7 @@ export default {
 
                 if(!isChannelVisible(originalArgs[0].channel.id)) originalArgs[0]["aria-label"] += " hidden";
                 return originalArgs;
+
             }, true);
 
             Unpatch.hasUnread = patcher.patch(unreadManager, "hasUnread", (originalArgs) => {
