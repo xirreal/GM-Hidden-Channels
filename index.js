@@ -80,7 +80,7 @@ const cacheHiddenChannels = () => {
 
 const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
 
-    if(newHiddenChannels?.length > 0 && hiddenChannelCache[guildId]?.channels?.length !== undefined) {
+    if(newHiddenChannels?.length > 0 && hiddenChannelCache[guildId]?.channels !== undefined) {
         hiddenChannelCache[guildId].hiddenChannels.concat(newHiddenChannels);
         console.log("exiting early cause channel update")
         return;
@@ -88,7 +88,7 @@ const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
 
     const channels = getDefaultChannel.getChannels(guildId);
 
-    if(hiddenChannelCache[guildId]?.channels?.length > 0 && hiddenChannelCache[guildId]?.channels?.length == channels.count) return;
+    if(hiddenChannelCache[guildId]?.channels > 0 && hiddenChannelCache[guildId]?.channels == channels.count) return;
 
     hiddenChannelCache[guildId] = {
         channels: channels.count,
@@ -167,8 +167,8 @@ export default {
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
                 // originalArgs[0] is the channel id
 
-                while(hiddenChannelCache[originalArgs[0]].channels.length === undefined) {
-                    console.log("waiting...")
+                while(hiddenChannelCache[originalArgs[0]].hiddenChannels.length === undefined) {
+                    console.log(hiddenChannelCache[originalArgs[0]])
                 }
 
                 hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
