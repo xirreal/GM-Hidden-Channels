@@ -88,7 +88,7 @@ const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
 
     const channels = getDefaultChannel.getChannels(guildId);
 
-    else if(hiddenChannelCache[guildId]?.channels?.length > 0 && hiddenChannelCache[guildId]?.channels?.length == channels.count) return;
+    if(hiddenChannelCache[guildId]?.channels?.length > 0 && hiddenChannelCache[guildId]?.channels?.length == channels.count) return;
 
     hiddenChannelCache[guildId] = {
         channels: channels.count,
