@@ -175,7 +175,7 @@ export default {
                     (function wait () {
                         if(hiddenChannelCache[originalArgs[0]]?.hiddenChannels !== undefined) r;
                         else setTimeout(wait, 0);
-                    })()};
+                    })()});
 
 
                 hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
