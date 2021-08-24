@@ -79,7 +79,8 @@ const cacheHiddenChannels = () => {
 }
 
 const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
-    if(newHiddenChannels?.length > 0 && hiddenChannelCache[guildId]?.channels !== undefined) {
+    console.log(newHiddenChannels)
+    if(newHiddenChannels?.length > 0 && hiddenChannelCache[guildId]?.channels?.length !== undefined) {
         hiddenChannelCache[guildId].hiddenChannels.concat(newHiddenChannels);
         console.log("exiting early cause channel update")
         return;
@@ -118,6 +119,7 @@ const handleGuildLeave = (event) => {
 }
 
 const handleChannelUpdate = (event) => {
+    console.log(!!event?.updates.length, event?.updates?.filter(x => !isChannelVisible(x.id)))
     setImmediate(cacheServerHiddenChannels(event?.updates?.[0]?.channel?.guild_id || event?.channel?.guild_id, event?.updates?.filter(x => !isChannelVisible(x.id))));
 };
 
