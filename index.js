@@ -173,17 +173,13 @@ export default {
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
                 // originalArgs[0] is the channel id
 
-                console.log("called getCategories", hiddenChannelCache[originalArgs[0]].hiddenChannels)
-
                 hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
                     if(!channel) return previousReturn;
-                    console.log("inside loop")
                     const channelsInCategory = previousReturn[channel.parent_id || "null"];
                     if (channelsInCategory.filter((item) => item?.channel?.id === channel.id).length) return previousReturn;
                     channelsInCategory.push({ channel: channel, index: 0 });
                 });
 
-                setTimeout(() => console.log("timeout", hiddenChannelCache[originalArgs[0]].hiddenChannels), 5000);
                 return previousReturn;
             });
 
