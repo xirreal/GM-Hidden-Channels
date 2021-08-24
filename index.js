@@ -81,24 +81,35 @@ const cacheHiddenChannels = () => {
 const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
     if(newHiddenChannels?.length > 0 && hiddenChannelCache[guildId]?.channels !== undefined) {
         hiddenChannelCache[guildId].hiddenChannels.concat(newHiddenChannels);
+        console.log("exiting early cause channel update")
         return;
     }
     else if(hiddenChannelCache[guildId]?.channels?.length > 0 && hiddenChannelCache[guildId]?.channels?.length == channels.count) return;
 
+    console.log("if you dont see this check line above!")
+
     const channels = getDefaultChannel.getChannels(guildId);
+
+    console.log(channels)
 
     hiddenChannelCache[guildId] = {
         channels: channels.count,
         hiddenChannels: []
     };
 
+    console.log(hiddenChannelCache[guildId]);
+
     channels.SELECTABLE.concat(channels.VOCAL).forEach(channel => {
+        console.log("checking channel");
         if (!isChannelVisible(channel?.id))
             hiddenChannelCache[guildId].hiddenChannels.push(channel);
     });
+
+    console.log(hiddenChannelCache[guildId]);
 }
 
 const handleGuildJoin = (event) => {
+    console.log("called guild join")
     setImmediate(cacheServerHiddenChannels(event.guild.id));
 };
 
