@@ -113,8 +113,9 @@ const handleGuildJoin = (event) => {
 };
 
 const handleGuildLeave = (event) => {
-    try{
-    delete hiddenChannelCache[event.guild.id];
+    try {
+        delete hiddenChannelCache[event.guild.id];
+    }
     catch (e) => {
         console.log(hiddenChannelCache);
     }
