@@ -120,7 +120,7 @@ const handleChannelDelete = (event) => {
     const guildId = event.channel.guild_id;
     try {
         console.log("sup", hiddenChannelCache);
-        if(!hiddenChannelsCache[guildId]) return cacheServerHiddenChannels(guildId);
+        if(hiddenChannelsCache[guildId] === undefined) return cacheServerHiddenChannels(guildId);
         console.log("uwu");
 
         hiddenChannelsCache[guildId].hiddenChannels.filter(channel => channel?.id != event.channel.id)
