@@ -65,7 +65,8 @@ const isChannelVisible = channelId => {
 const hiddenChannelCache = Object.values(getGuilds()).reduce((cache, currentGuild) => { 
     cache[currentGuild.id] = {
         channels: getDefaultChannel.getChannels(currentGuild.id).count,
-        hiddenChannels: []
+        hiddenChannels: [],
+        done: true
     };
     return cache;
 }, {});
@@ -91,7 +92,8 @@ const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
 
     hiddenChannelCache[guildId] = {
         channels: channels.count,
-        hiddenChannels: []
+        hiddenChannels: [],
+        done: false
     };
 
     channels.SELECTABLE.concat(channels.VOCAL).forEach(channel => {
@@ -99,6 +101,7 @@ const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
             hiddenChannelCache[guildId].hiddenChannels.push(channel);
     });
 
+    hiddenChannelCache[guildId].done = true;
 }
 
 const handleGuildJoin = (event) => {
@@ -163,7 +166,7 @@ export default {
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
                 // originalArgs[0] is the server id
 
-                if(hiddenChannelCache[originalArgs[0]] === undefined) {
+                if(!hiddenChannelCache[originalArgs[0]].done) {
                     console.log("server not cached yet!!");
                     setTimeout(() => {
                         console.log("retrying...");
