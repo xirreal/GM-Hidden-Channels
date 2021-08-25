@@ -184,7 +184,7 @@ export default {
                     const channelsInCategory = previousReturn[channel.parent_id || "null"];
                     if (channelsInCategory.filter((item) => item?.channel?.id === channel.id).length) return previousReturn;
                     channelsInCategory.push({ channel: channel, index: 0 });
-                });
+                };
 
                 return previousReturn;
             });
