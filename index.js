@@ -73,10 +73,10 @@ const hiddenChannelCache = Object.values(getGuilds()).reduce((cache, currentGuil
 
 const cacheHiddenChannels = () => {
     const fetchedChannels = Object.values(getAllChannels());
-    fetchedChannels.forEach(channel => {
+    for(let channel of fetchedChannels) {
         if (channel.type !== ChannelTypes.GUILD_CATEGORY && !isChannelVisible(channel.id))
             hiddenChannelCache[channel.guild_id].hiddenChannels.push(channel);
-    });
+    };
 }
 
 const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
@@ -96,10 +96,10 @@ const cacheServerHiddenChannels = (guildId, newHiddenChannels) => {
         done: false
     };
 
-    channels.SELECTABLE.concat(channels.VOCAL).forEach(channel => {
+    for(let channel of channels.SELECTABLE.concat(channels.VOCAL)) {
         if (!isChannelVisible(channel?.id))
             hiddenChannelCache[guildId].hiddenChannels.push(channel);
-    });
+    }
 
     hiddenChannelCache[guildId].done = true;
 }
@@ -179,7 +179,7 @@ export default {
 
                 console.log("server cached!", hiddenChannelCache[originalArgs[0]]);
 
-                hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
+                for(let channel of hiddenChannelCache[originalArgs[0]].hiddenChannels) {
                     if(!channel) return previousReturn;
                     const channelsInCategory = previousReturn[channel.parent_id || "null"];
                     if (channelsInCategory.filter((item) => item?.channel?.id === channel.id).length) return previousReturn;
