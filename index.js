@@ -164,9 +164,15 @@ export default {
                 // originalArgs[0] is the server id
 
                 if(hiddenChannelCache[originalArgs[0]] === undefined) {
-                    setTimeout(() => getCategories.getCategories(originalArgs[0]), 5000);
+                    console.log("server not cached yet!!");
+                    setTimeout(() => {
+                        console.log("retrying...");
+                        getCategories.getCategories(originalArgs[0])
+                    }, 5000);
                     return previousReturn;
                 }
+
+                console.log("server cached!")
 
                 hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
                     if(!channel) return previousReturn;
