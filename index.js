@@ -163,6 +163,11 @@ export default {
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
                 // originalArgs[0] is the channel id
 
+                if(hiddenChannelCache[originalArgs[0]] === undefined) {
+                    setTimeout(getCategories.getCategories(...originalArgs), 5000);
+                    return previousReturn;
+                }
+
                 hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
                     if(!channel) return previousReturn;
                     const channelsInCategory = previousReturn[channel.parent_id || "null"];
