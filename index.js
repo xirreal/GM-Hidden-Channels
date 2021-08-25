@@ -172,7 +172,7 @@ export default {
                     return previousReturn;
                 }
 
-                console.log("server cached!")
+                console.log("server cached!", hiddenChannelCache[originalArgs[0]);
 
                 hiddenChannelCache[originalArgs[0]].hiddenChannels.forEach(channel => {
                     if(!channel) return previousReturn;
