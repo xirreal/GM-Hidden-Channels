@@ -166,18 +166,12 @@ export default {
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
                 // originalArgs[0] is the server id
 
-                console.log("is server cached?", hiddenChannelCache[originalArgs[0]]);
-
                 if(!hiddenChannelCache[originalArgs[0]]?.done) {
-                    console.log("server not cached yet!!");
                     setTimeout(() => {
-                        console.log("retrying...");
                         getCategories.getCategories(originalArgs[0])
                     }, 5000);
                     return previousReturn;
                 }
-
-                console.log("server cached!", hiddenChannelCache[originalArgs[0]]);
 
                 for(let channel of hiddenChannelCache[originalArgs[0]].hiddenChannels) {
                     if(!channel) return previousReturn;
