@@ -161,10 +161,10 @@ export default {
             FluxDispatcher.subscribe("CHANNEL_SELECT", handleChannelChange);
 
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
-                // originalArgs[0] is the channel id
+                // originalArgs[0] is the server id
 
                 if(hiddenChannelCache[originalArgs[0]] === undefined) {
-                    setTimeout(getCategories.getCategories(...originalArgs), 5000);
+                    setTimeout(() => getCategories.getCategories(originalArgs[0]), 5000);
                     return previousReturn;
                 }
 
