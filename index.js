@@ -3,14 +3,15 @@ import * as patcher from '@goosemod/patcher';
 
 // Webpacks
 
-const getAllChannels  = webpackModules.findByProps("getMutableGuildChannels").getMutableGuildChannels;
+const channelsWebpack = webpackModules.findByProps("getMutableGuildChannels");
+const getAllChannels  = channelsWebpack.getMutableGuildChannels;
+const getChannel      = channelsWebpack.getChannel;
 const currentUser     = webpackModules.findByProps("getCurrentUser").getCurrentUser();
 const checkPermission = webpackModules.findByProps("computePermissions").can;
-const ChannelItem = webpackModules.find(m => m?.default?.displayName === 'ChannelItem');
-const { getChannel }  = webpackModules.findByProps("getChannel");
+const ChannelItem     = webpackModules.find(m => m?.default?.displayName === 'ChannelItem');
 const { getGuilds }   = webpackModules.findByProps("getGuilds");
+const FluxDispatcher  = webpackModules.common.FluxDispatcher;
 const { Permissions, ChannelTypes } = webpackModules.findByProps("Permissions","ChannelTypes");
-const FluxDispatcher = webpackModules.common.FluxDispatcher;
 
 // Webpacks to be patched
 
