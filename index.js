@@ -58,15 +58,9 @@ const handleChannelChange = data => {
 }
 
 const isChannelVisible = channelId => {
-    try {
-    	const channel = getChannel(channelId);
-   	if(!channel || !channelId || [ChannelTypes.DM, ChannelTypes.GROUP_DM].includes(channel?.type)) return true;
-    	return [ChannelTypes.GUILD_TEXT, ChannelTypes.GUILD_VOICE, ChannelTypes.GUILD_STAGE_VOICE, ChannelTypes.GUILD_ANNOUNCEMENT, ChannelTypes.ANNOUNCEMENT_THREAD, ChannelTypes.PRIVATE_THREAD, ChannelTypes.PUBLIC_THREAD].includes(channel?.type) && checkPermission(Permissions.VIEW_CHANNEL, channel, currentUser);
-    }
-    catch(e) {
-	console.log("failed to get channel", channelId)
-	return true;
-    }
+    const channel = getChannel(channelId);
+    if(!channel || !channelId || [ChannelTypes.DM, ChannelTypes.GROUP_DM].includes(channel?.type)) return true;
+    return [ChannelTypes.GUILD_TEXT, ChannelTypes.GUILD_VOICE, ChannelTypes.GUILD_STAGE_VOICE, ChannelTypes.GUILD_ANNOUNCEMENT, ChannelTypes.ANNOUNCEMENT_THREAD, ChannelTypes.PRIVATE_THREAD, ChannelTypes.PUBLIC_THREAD].includes(channel?.type) && checkPermission(Permissions.VIEW_CHANNEL, currentUser, channel);
 }
 
 const hiddenChannelCache = Object.values(getGuilds()).reduce((cache, currentGuild) => { 
@@ -81,7 +75,6 @@ const hiddenChannelCache = Object.values(getGuilds()).reduce((cache, currentGuil
 const cacheHiddenChannels = () => {
     const fetchedChannels = Object.values(getAllChannels());
     for(let channel of fetchedChannels) {
-	console.log(channel, isChannelVisible(channel.id))
         if (channel.type !== ChannelTypes.GUILD_CATEGORY && !isChannelVisible(channel.id))
             hiddenChannelCache[channel.guild_id].hiddenChannels.push(channel);
     };
@@ -186,7 +179,6 @@ export default {
                     const channelsInCategory = previousReturn[channel.parent_id || "null"];
                     if (channelsInCategory.filter((item) => item?.channel?.id === channel.id).length) return previousReturn;
                     channelsInCategory.push({ channel: channel, index: 0 });
-		    console.log("pushed hidden channel");
                 };
 
                 return previousReturn;
