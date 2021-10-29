@@ -53,6 +53,7 @@ const appendHiddenChannelNotice = () => {
 }
 
 const handleChannelChange = data => {
+    console.log(data)
     if (data.type !== "CHANNEL_SELECT" || !data.channelId) return;
     if (!isChannelVisible(data.channelId)) setTimeout(appendHiddenChannelNotice);
 }
@@ -64,7 +65,7 @@ const isChannelVisible = channelId => {
     	return [ChannelTypes.GUILD_TEXT, ChannelTypes.GUILD_VOICE, ChannelTypes.GUILD_STAGE_VOICE, ChannelTypes.GUILD_ANNOUNCEMENT, ChannelTypes.ANNOUNCEMENT_THREAD, ChannelTypes.PRIVATE_THREAD, ChannelTypes.PUBLIC_THREAD].includes(channel?.type) && checkPermission(Permissions.VIEW_CHANNEL, channel, currentUser);
     }
     catch(e) {
-	return true;
+	return false;
     }
 }
 
