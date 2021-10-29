@@ -180,8 +180,6 @@ export default {
                     return previousReturn;
                 }
 	
-		    
-		console.log(hiddenChannelCache);
                 for(let channel of hiddenChannelCache[originalArgs[0]].hiddenChannels) {
                     if(!channel) return previousReturn;
                     const channelsInCategory = previousReturn[channel.parent_id || "null"];
