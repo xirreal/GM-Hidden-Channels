@@ -53,7 +53,6 @@ const appendHiddenChannelNotice = () => {
 }
 
 const handleChannelChange = data => {
-    console.log(data)
     if (data.type !== "CHANNEL_SELECT" || !data.channelId) return;
     if (!isChannelVisible(data.channelId)) setTimeout(appendHiddenChannelNotice);
 }
@@ -65,7 +64,7 @@ const isChannelVisible = channelId => {
     	return [ChannelTypes.GUILD_TEXT, ChannelTypes.GUILD_VOICE, ChannelTypes.GUILD_STAGE_VOICE, ChannelTypes.GUILD_ANNOUNCEMENT, ChannelTypes.ANNOUNCEMENT_THREAD, ChannelTypes.PRIVATE_THREAD, ChannelTypes.PUBLIC_THREAD].includes(channel?.type) && checkPermission(Permissions.VIEW_CHANNEL, channel, currentUser);
     }
     catch(e) {
-	return false;
+	return true;
     }
 }
 
@@ -81,6 +80,7 @@ const hiddenChannelCache = Object.values(getGuilds()).reduce((cache, currentGuil
 const cacheHiddenChannels = () => {
     const fetchedChannels = Object.values(getAllChannels());
     for(let channel of fetchedChannels) {
+	console.log(channel, isChannelVisible(channel.id))
         if (channel.type !== ChannelTypes.GUILD_CATEGORY && !isChannelVisible(channel.id))
             hiddenChannelCache[channel.guild_id].hiddenChannels.push(channel);
     };
