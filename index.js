@@ -60,10 +60,12 @@ const handleChannelChange = data => {
 const isChannelVisible = channelId => {
     try {
     	const channel = getChannel(channelId);
+	console.log("got channel!", checkPermission(Permissions.VIEW_CHANNEL, channel, currentUser))
    	if(!channel || !channelId || [ChannelTypes.DM, ChannelTypes.GROUP_DM].includes(channel?.type)) return true;
     	return [ChannelTypes.GUILD_TEXT, ChannelTypes.GUILD_VOICE, ChannelTypes.GUILD_STAGE_VOICE, ChannelTypes.GUILD_ANNOUNCEMENT, ChannelTypes.ANNOUNCEMENT_THREAD, ChannelTypes.PRIVATE_THREAD, ChannelTypes.PUBLIC_THREAD].includes(channel?.type) && checkPermission(Permissions.VIEW_CHANNEL, channel, currentUser);
     }
     catch(e) {
+	console.log("failed to get channel")
 	return true;
     }
 }
@@ -78,9 +80,7 @@ const hiddenChannelCache = Object.values(getGuilds()).reduce((cache, currentGuil
 }, {});
 
 const cacheHiddenChannels = () => {
-    console.log("Fetching all channels")
     const fetchedChannels = Object.values(getAllChannels());
-    console.log(fetchedChannels)
     for(let channel of fetchedChannels) {
 	console.log(channel, isChannelVisible(channel.id))
         if (channel.type !== ChannelTypes.GUILD_CATEGORY && !isChannelVisible(channel.id))
