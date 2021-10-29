@@ -78,7 +78,9 @@ const hiddenChannelCache = Object.values(getGuilds()).reduce((cache, currentGuil
 }, {});
 
 const cacheHiddenChannels = () => {
+    console.log("Fetching all channels")
     const fetchedChannels = Object.values(getAllChannels());
+    console.log(fetchedChannels)
     for(let channel of fetchedChannels) {
 	console.log(channel, isChannelVisible(channel.id))
         if (channel.type !== ChannelTypes.GUILD_CATEGORY && !isChannelVisible(channel.id))
