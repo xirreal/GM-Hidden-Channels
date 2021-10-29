@@ -63,8 +63,7 @@ const isChannelVisible = channelId => {
    	if(!channel || !channelId || [ChannelTypes.DM, ChannelTypes.GROUP_DM].includes(channel?.type)) return true;
     	return [ChannelTypes.GUILD_TEXT, ChannelTypes.GUILD_VOICE, ChannelTypes.GUILD_STAGE_VOICE, ChannelTypes.GUILD_ANNOUNCEMENT, ChannelTypes.ANNOUNCEMENT_THREAD, ChannelTypes.PRIVATE_THREAD, ChannelTypes.PUBLIC_THREAD].includes(channel?.type) && checkPermission(Permissions.VIEW_CHANNEL, channel, currentUser);
     }
-    catch(e){
-	console.log(channelId, "meow")
+    catch(e) {
 	return true;
     }
 }
@@ -172,11 +171,13 @@ export default {
 
             Unpatch.getCategories = patcher.patch(getCategories, "getCategories", (originalArgs, previousReturn) => {
                 // originalArgs[0] is the server id
+		    console.log("category patch");
 
                 if(!hiddenChannelCache[originalArgs[0]]?.done) {
                     setTimeout(() => {
                         getCategories.getCategories(originalArgs[0])
                     }, 5000);
+		    console.log(hiddenChannelCache);
                     return previousReturn;
                 }
 
@@ -185,6 +186,7 @@ export default {
                     const channelsInCategory = previousReturn[channel.parent_id || "null"];
                     if (channelsInCategory.filter((item) => item?.channel?.id === channel.id).length) return previousReturn;
                     channelsInCategory.push({ channel: channel, index: 0 });
+		    console.log("pushed hidden channel");
                 };
 
                 return previousReturn;
